@@ -13,7 +13,7 @@ class EnchantWithLevelsFunction extends EntryFunction{
 	/**
 	 * @param LootCondition[] $conditions
 	 */
-	public function __construct(private int $min, private int $max, private bool $treasure = false, array $conditions = []){
+	public function __construct(private int $min, private int $max, private bool $treasureEnchants = false, array $conditions = []){
 		if($min < 0){
 			throw new \InvalidArgumentException("Min cannot be less than 0");
 		}
@@ -54,7 +54,7 @@ class EnchantWithLevelsFunction extends EntryFunction{
 			];
 		}
 
-		if($this->treasure){
+		if($this->treasureEnchants){
 			$data["treasure"] = true;
 		}
 
