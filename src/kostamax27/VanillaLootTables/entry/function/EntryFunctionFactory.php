@@ -12,10 +12,12 @@ use kostamax27\VanillaLootTables\condition\LootCondition;
 use kostamax27\VanillaLootTables\entry\function\types\EnchantRandomlyFunction;
 use kostamax27\VanillaLootTables\entry\function\types\EnchantWithLevelsFunction;
 use kostamax27\VanillaLootTables\entry\function\types\FurnaceSmeltFunction;
+use kostamax27\VanillaLootTables\entry\function\types\LootEnchantmentEntry;
 use kostamax27\VanillaLootTables\entry\function\types\RandomDyeFunction;
 use kostamax27\VanillaLootTables\entry\function\types\SetCountFunction;
 use kostamax27\VanillaLootTables\entry\function\types\SetCustomNameFunction;
 use kostamax27\VanillaLootTables\entry\function\types\SetDamageFunction;
+use kostamax27\VanillaLootTables\entry\function\types\SetLoreFunction;
 use kostamax27\VanillaLootTables\entry\function\types\SetMetaFunction;
 use kostamax27\VanillaLootTables\entry\function\types\SetPotionTypeFunction;
 use kostamax27\VanillaLootTables\entry\function\types\SetSuspiciousStewTypeFunction;
@@ -90,7 +92,7 @@ final class EntryFunctionFactory{
 
 				[$min, $max] = $this->parseIntMinMax($enchantData["level"], "level", allowIndexedArray: true);
 
-				$enchantments[] = [[$min, $max], $enchantment];
+				$enchantments[] = new LootEnchantmentEntry($enchantment, $min, $max);
 			}
 
 			if(count($enchantments) === 0){
