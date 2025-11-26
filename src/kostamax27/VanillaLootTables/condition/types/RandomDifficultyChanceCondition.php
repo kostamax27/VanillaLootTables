@@ -12,7 +12,6 @@ use pocketmine\utils\Utils;
 use pocketmine\world\World;
 
 class RandomDifficultyChanceCondition extends LootCondition{
-
 	/**
 	 * @param array<int, float> $difficultiesChance difficulty => chance
 	 */

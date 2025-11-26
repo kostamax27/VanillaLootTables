@@ -8,12 +8,9 @@ use kostamax27\VanillaLootTables\condition\LootCondition;
 use kostamax27\VanillaLootTables\LootContext;
 
 class RandomChanceCondition extends LootCondition{
-
-	protected float $chance;
-
-	public function __construct(float $chance){
-		$this->chance = $chance;
-	}
+	public function __construct(
+		protected float $chance,
+	){}
 
 	public function evaluate(LootContext $context) : bool{
 		return $context->getRandom()->nextFloat() <= $this->chance;

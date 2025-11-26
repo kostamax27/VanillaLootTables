@@ -11,7 +11,6 @@ use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\player\Player;
 
 class KilledByPlayerCondition extends LootCondition{
-
 	public function evaluate(LootContext $context) : bool{
 		$origin = $context->getOrigin();
 		if($origin instanceof Entity && ($lastDamage = $origin->getLastDamageCause()) instanceof EntityDamageByEntityEvent){

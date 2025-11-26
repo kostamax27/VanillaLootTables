@@ -10,14 +10,18 @@ use kostamax27\VanillaLootTables\LootContext;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\StringToEnchantmentParser;
 use pocketmine\item\Item;
+use pocketmine\utils\Utils;
 use function min;
 
 class SpecificEnchantsFunction extends EntryFunction{
 	/**
 	 * @param LootEnchantmentEntry[] $entries
 	 * @param LootCondition[] $conditions
+	 *
+	 * @phpstan-param non-empty-list<LootEnchantmentEntry> $entries
 	 */
 	public function __construct(private array $entries, array $conditions = []){
+		Utils::validateArrayValueType($entries, function(LootEnchantmentEntry $_) : void{});
 		parent::__construct($conditions);
 	}
 

@@ -12,7 +12,6 @@ use function count;
  * The primary purpose of this trait is providing scope isolation for the methods it contains.
  */
 trait LootConditionHandlingTrait{
-
 	/** @var LootCondition[] */
 	protected array $conditions = [];
 

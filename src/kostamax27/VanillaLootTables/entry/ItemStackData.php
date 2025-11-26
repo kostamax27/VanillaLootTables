@@ -14,7 +14,9 @@ use function ceil;
 use function min;
 
 final class ItemStackData{
-	public function __construct(public string $name){}
+	public function __construct(
+		public string $name,
+	){}
 
 	/**
 	 * @param EntryFunction[] $functions
