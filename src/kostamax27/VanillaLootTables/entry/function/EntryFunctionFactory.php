@@ -126,6 +126,20 @@ final class EntryFunctionFactory{
 			return new SetCustomNameFunction($name, $conditions);
 		}, ["set_name"]);
 
+		$this->register(SetLoreFunction::class, function(array $data, array $conditions) : SetLoreFunction{
+			if(!isset($data["lore"])){
+				throw new SavedDataLoadingException("Key \"lore\" doesn't exists");
+			}
+			$lore = is_array($data["lore"]) ? $data["lore"] : [$data["lore"]];
+			foreach($lore as $line){
+				if(!is_string($line)){
+					throw new SavedDataLoadingException("Lore line is not a string");
+				}
+				Utils::checkUTF8($line);
+			}
+			return new SetLoreFunction($lore, $conditions);
+		}, ["set_lore"]);
+
 		$this->register(SetDamageFunction::class, function(array $data, array $conditions) : SetDamageFunction{
 			if(!isset($data["damage"])){
 				throw new SavedDataLoadingException("Key \"damage\" doesn't exists");
