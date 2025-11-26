@@ -1,0 +1,10 @@
+--- # Poggit-CI Manifest. Open the CI at https://poggit.pmmp.io/ci/kostamax27/VanillaLootTables
+build-by-default: true
+branches:
+- stable
+projects:
+  VanillaLootTables:
+    path: ""
+    model: virion
+    type: library
+...
