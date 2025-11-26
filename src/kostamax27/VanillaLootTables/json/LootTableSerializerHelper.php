@@ -184,7 +184,7 @@ final class LootTableSerializerHelper{
 		if($e instanceof ItemStackData){
 			$data["name"] = $e->name;
 		}elseif($e instanceof LootTable){
-			$data["name"] = LootTableFactory::getInstance()->getSaveName($e::class);
+			$data["name"] = LootTableFactory::getInstance()->getSaveName($e);
 		}elseif(is_string($e)){
 			//String reference to a loot table (for circular references)
 			$data["name"] = $e;
