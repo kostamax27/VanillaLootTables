@@ -7,10 +7,9 @@ namespace kostamax27\VanillaLootTables\entry\function\types;
 use kostamax27\VanillaLootTables\condition\LootCondition;
 use kostamax27\VanillaLootTables\entry\function\EntryFunction;
 use kostamax27\VanillaLootTables\LootContext;
+use pocketmine\item\enchantment\AvailableEnchantmentRegistry;
 use pocketmine\item\enchantment\EnchantmentInstance;
-use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
-use function array_values;
 use function count;
 
 class EnchantRandomlyFunction extends EntryFunction{
@@ -22,10 +21,15 @@ class EnchantRandomlyFunction extends EntryFunction{
 	}
 
 	public function onCreation(LootContext $context, Item $item) : Item{
-		//TODO: treasure enchantments check
-		//TODO: check compatibility
-		$enchants = array_values(VanillaEnchantments::getAll());
-		$item->addEnchantment(new EnchantmentInstance($enchants[$context->getRandom()->nextBoundedInt(count($enchants))]));
+		$registry = AvailableEnchantmentRegistry::getInstance();
+		if($this->treasureEnchants){
+			$enchants = $registry->getAllEnchantmentsForItem($item);
+		}else{
+			$enchants = $registry->getPrimaryEnchantmentsForItem($item);
+		}
+		if(count($enchants) !== 0){
+			$item->addEnchantment(new EnchantmentInstance($enchants[$context->getRandom()->nextBoundedInt(count($enchants))]));
+		}
 		return parent::onCreation($context, $item);
 	}
 
