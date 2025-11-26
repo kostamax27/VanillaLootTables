@@ -1,0 +1,146 @@
+<?php
+
+declare(strict_types=1);
+
+namespace kostamax27\VanillaLootTables\condition;
+
+use Closure;
+use DaveRandom\CallbackValidator\BuiltInTypes;
+use DaveRandom\CallbackValidator\CallbackType;
+use DaveRandom\CallbackValidator\ParameterType;
+use DaveRandom\CallbackValidator\ReturnType;
+use InvalidArgumentException;
+use kostamax27\VanillaLootTables\condition\types\KilledByPlayerCondition;
+use kostamax27\VanillaLootTables\condition\types\KilledByPlayerOrChildCondition;
+use kostamax27\VanillaLootTables\condition\types\RandomChanceCondition;
+use kostamax27\VanillaLootTables\condition\types\RandomDifficultyChanceCondition;
+use pocketmine\data\SavedDataLoadingException;
+use pocketmine\utils\SingletonTrait;
+use pocketmine\utils\Utils;
+use pocketmine\world\World;
+use function is_float;
+use function str_replace;
+use function strtolower;
+use function trim;
+
+final class LootConditionFactory{
+	use SingletonTrait;
+
+	/**
+	 * @var Closure[] save ID => creator function
+	 * @phpstan-var array<string, Closure(array<string, mixed>) : LootCondition>
+	 */
+	private array $creationFuncs = [];
+
+	/**
+	 * @var string[]
+	 * @phpstan-var array<class-string<LootCondition>, string>
+	 */
+	private array $saveNames = [];
+
+	public function __construct(){
+		$this->register(KilledByPlayerCondition::class, function(array $data) : KilledByPlayerCondition{
+			return new KilledByPlayerCondition();
+		}, "killed_by_player");
+
+		$this->register(KilledByPlayerOrChildCondition::class, function(array $data) : KilledByPlayerOrChildCondition{
+			return new KilledByPlayerOrChildCondition();
+		}, "killed_by_player_or_pets");
+
+		$this->register(RandomChanceCondition::class, function(array $data) : RandomChanceCondition{
+			if(!isset($data["chance"])){
+				throw new SavedDataLoadingException("Key \"chance\" doesn't exists");
+			}
+			$chance = $data["chance"];
+			if(!is_float($chance)){
+				throw new SavedDataLoadingException("Expected value of type float in key \"chance\"");
+			}
+			return new RandomChanceCondition($chance);
+		}, "random_chance");
+
+		$this->register(RandomDifficultyChanceCondition::class, function(array $data) : RandomDifficultyChanceCondition{
+			if(!isset($data["default_chance"])){
+				throw new SavedDataLoadingException("Key \"default_chance\" doesn't exists");
+			}
+			$defaultChance = $data["default_chance"];
+			if(!is_float($defaultChance)){
+				throw new SavedDataLoadingException("Expected value of type float in key \"default_chance\"");
+			}
+			unset($data["default_chance"]);
+
+			$difficultiesChance = [];
+			foreach(Utils::stringifyKeys($data) as $difficultyName => $chance){
+				$difficulty = World::getDifficultyFromString($difficultyName);
+				if($difficulty === -1){
+					throw new SavedDataLoadingException("Unknown difficulty $difficultyName");
+				}
+				if(!is_float($chance)){
+					throw new SavedDataLoadingException("Expected value of type float in key \"key\"");
+				}
+				$difficultiesChance[$difficulty] = $chance;
+			}
+			return new RandomDifficultyChanceCondition($difficultiesChance, $defaultChance);
+		}, "random_difficulty_chance");
+	}
+
+	/**
+	 * Registers a loot condition type into the index.
+	 *
+	 * @param string $className Class that extends LootCondition
+	 *
+	 * @phpstan-param class-string<LootCondition> $className
+	 * @phpstan-param Closure(array<string, mixed> $arguments) : LootCondition $creationFunc
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function register(string $className, Closure $creationFunc, string $saveName) : void{
+		Utils::testValidInstance($className, LootCondition::class);
+		Utils::validateCallableSignature(new CallbackType(
+			new ReturnType(LootCondition::class),
+			new ParameterType("arguments", BuiltInTypes::ARRAY)
+		), $creationFunc);
+
+		$this->creationFuncs[$saveName] = $creationFunc;
+		$this->saveNames[$className] = $saveName;
+	}
+
+	/**
+	 * Creates an loot condition from data stored on a chunk.
+	 *
+	 * @param mixed[] $data
+	 *
+	 * @phpstan-param array{
+	 *    condition: string,
+	 *    ...
+	 * } $data
+	 *
+	 * @throws SavedDataLoadingException
+	 * @internal
+	 */
+	public function createFromData(array $data) : ?LootCondition{
+		$func = $this->creationFuncs[$this->reprocess($data["condition"])] ?? null;
+		if($func === null){
+			return null;
+		}
+		unset($data["condition"]);
+
+		/** @var LootCondition $condition */
+		$condition = $func($data);
+
+		return $condition;
+	}
+
+	/**
+	 * @phpstan-param class-string<LootCondition> $class
+	 */
+	public function getSaveId(string $class) : string{
+		if(isset($this->saveNames[$class])){
+			return $this->saveNames[$class];
+		}
+		throw new InvalidArgumentException("LootCondition $class is not registered");
+	}
+
+	protected function reprocess(string $input) : string{
+		return strtolower(str_replace([" ", "minecraft:"], ["_", ""], trim($input)));
+	}
+}
