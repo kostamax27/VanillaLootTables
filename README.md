@@ -22,6 +22,11 @@ or [bedrock-samples](https://github.com/Mojang/bedrock-samples/tree/main/behavio
 - **Pools**: Weighted and tiered loot pools
 - **JSON Support**: Serialization and deserialization helpers
 
+## 📖 Example Plugin
+
+For a real-world usage example, check out [VanillaFishing](https://github.com/kostamax27/VanillaFishing) - a plugin that
+uses VanillaLootTables to implement vanilla fishing mechanics.
+
 ## 📋 TODO
 
 In the future, this section will contain a detailed checklist of all vanilla conditions and entry functions, with
