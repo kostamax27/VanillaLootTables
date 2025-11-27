@@ -122,7 +122,6 @@ final class EntryFunctionFactory{
 			if(!is_string($name)){
 				throw new SavedDataLoadingException("Name is not a string or key doesn't exists");
 			}
-			Utils::checkUTF8($name);
 			return new SetCustomNameFunction($name, $conditions);
 		}, ["set_name"]);
 
@@ -135,7 +134,6 @@ final class EntryFunctionFactory{
 				if(!is_string($line)){
 					throw new SavedDataLoadingException("Lore line is not a string");
 				}
-				Utils::checkUTF8($line);
 			}
 			return new SetLoreFunction($lore, $conditions);
 		}, ["set_lore"]);

@@ -8,7 +8,6 @@ use kostamax27\VanillaLootTables\condition\LootCondition;
 use kostamax27\VanillaLootTables\entry\function\EntryFunction;
 use kostamax27\VanillaLootTables\LootContext;
 use pocketmine\item\Item;
-use pocketmine\utils\Utils;
 use function array_values;
 use function count;
 
@@ -21,9 +20,6 @@ class SetLoreFunction extends EntryFunction{
 	 * @param LootCondition[] $conditions
 	 */
 	public function __construct(array $lines, array $conditions = []){
-		foreach($lines as $line){
-			Utils::checkUTF8($line);
-		}
 		$this->lore = array_values($lines);
 		parent::__construct($conditions);
 	}
