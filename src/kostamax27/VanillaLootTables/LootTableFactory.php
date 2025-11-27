@@ -22,6 +22,12 @@ final class LootTableFactory{
 	private array $lootTables = [];
 
 	/**
+	 * @var string[]
+	 * @phpstan-var array<int, string>
+	 */
+	private array $reverseMap = [];
+
+	/**
 	 * Registers a loot table type into the index.
 	 *
 	 * @throws \RuntimeException
@@ -33,6 +39,7 @@ final class LootTableFactory{
 		}
 
 		$this->lootTables[$name] = $table;
+		$this->reverseMap[spl_object_id($table)] = $name;
 	}
 
 	public function get(string $name) : ?LootTable{
@@ -48,12 +55,11 @@ final class LootTableFactory{
 	}
 
 	public function getSaveName(LootTable $table) : string{
-		foreach($this->lootTables as $name => $registeredTable){
-			if($registeredTable === $table){
-				return self::SAVE_DIR . $name . self::SAVE_EXTENSION;
-			}
+		$name = $this->reverseMap[spl_object_id($table)] ?? null;
+		if($name === null){
+			throw new \InvalidArgumentException("LootTable is not registered");
 		}
-		throw new \InvalidArgumentException("LootTable is not registered");
+		return self::SAVE_DIR . $name . self::SAVE_EXTENSION;
 	}
 
 	protected function reprocess(string $input) : string{
