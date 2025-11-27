@@ -7,6 +7,8 @@ namespace kostamax27\VanillaLootTables\entry\function\types;
 use kostamax27\VanillaLootTables\condition\LootCondition;
 use kostamax27\VanillaLootTables\entry\function\EntryFunction;
 use kostamax27\VanillaLootTables\LootContext;
+use pocketmine\item\enchantment\EnchantingHelper;
+use pocketmine\item\enchantment\EnchantingOption;
 use pocketmine\item\Item;
 
 class EnchantWithLevelsFunction extends EntryFunction{
@@ -24,9 +26,14 @@ class EnchantWithLevelsFunction extends EntryFunction{
 	}
 
 	public function onCreation(LootContext $context, Item $item) : Item{
-		//TODO: EnchantingHelper...
-		$enchantments = [];
-		foreach($enchantments as $enchantment){
+		static $createOptionMethod = new \ReflectionMethod(EnchantingHelper::class, "createOption");
+
+		$requiredXpLevel = $context->getRandom()->nextRange($this->min, $this->max);
+
+		/** @var EnchantingOption $enchantingOption */
+		$enchantingOption = $createOptionMethod->invoke(null, $context->getRandom(), $item, $requiredXpLevel);
+
+		foreach($enchantingOption->getEnchantments() as $enchantment){
 			$item->addEnchantment($enchantment);
 		}
 		return parent::onCreation($context, $item);
