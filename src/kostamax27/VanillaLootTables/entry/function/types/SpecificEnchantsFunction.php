@@ -27,11 +27,7 @@ class SpecificEnchantsFunction extends EntryFunction{
 
 	public function onCreation(LootContext $context, Item $item) : Item{
 		foreach($this->entries as $entry){
-			$level = $entry->min === $entry->max
-				? $entry->min
-				: $context->getRandom()->nextBoundedInt($entry->max - $entry->min + 1) + $entry->min;
-
-			$level = min($level, $entry->enchantment->getMaxLevel());
+			$level = min($context->getRandom()->nextRange($entry->min, $entry->max), $entry->enchantment->getMaxLevel());
 
 			if($level > 0){
 				$item->addEnchantment(new EnchantmentInstance($entry->enchantment, $level));
