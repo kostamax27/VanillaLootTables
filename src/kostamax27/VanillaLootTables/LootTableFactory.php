@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace kostamax27\VanillaLootTables;
 
 use pocketmine\utils\SingletonTrait;
+use function spl_object_id;
 use function str_replace;
 use function strtolower;
 use function trim;
