@@ -8,6 +8,7 @@ use kostamax27\VanillaLootTables\condition\LootCondition;
 use kostamax27\VanillaLootTables\entry\function\EntryFunction;
 use kostamax27\VanillaLootTables\LootContext;
 use pocketmine\item\enchantment\AvailableEnchantmentRegistry;
+use pocketmine\item\enchantment\EnchantingHelper;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\Item;
 use function count;
@@ -28,7 +29,8 @@ class EnchantRandomlyFunction extends EntryFunction{
 			$enchants = $registry->getPrimaryEnchantmentsForItem($item);
 		}
 		if(count($enchants) !== 0){
-			$item->addEnchantment(new EnchantmentInstance($enchants[$context->getRandom()->nextBoundedInt(count($enchants))]));
+			$enchant = new EnchantmentInstance($enchants[$context->getRandom()->nextBoundedInt(count($enchants))]);
+			$item = EnchantingHelper::enchantItem($item, [$enchant]);
 		}
 		return parent::onCreation($context, $item);
 	}

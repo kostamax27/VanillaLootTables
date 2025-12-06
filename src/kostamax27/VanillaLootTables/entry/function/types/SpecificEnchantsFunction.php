@@ -7,6 +7,7 @@ namespace kostamax27\VanillaLootTables\entry\function\types;
 use kostamax27\VanillaLootTables\condition\LootCondition;
 use kostamax27\VanillaLootTables\entry\function\EntryFunction;
 use kostamax27\VanillaLootTables\LootContext;
+use pocketmine\item\enchantment\EnchantingHelper;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\StringToEnchantmentParser;
 use pocketmine\item\Item;
@@ -30,7 +31,8 @@ class SpecificEnchantsFunction extends EntryFunction{
 			$level = min($context->getRandom()->nextRange($entry->min, $entry->max), $entry->enchantment->getMaxLevel());
 
 			if($level > 0){
-				$item->addEnchantment(new EnchantmentInstance($entry->enchantment, $level));
+				$enchant = new EnchantmentInstance($entry->enchantment, $level);
+				$item = EnchantingHelper::enchantItem($item, [$enchant]);
 			}
 		}
 		return parent::onCreation($context, $item);

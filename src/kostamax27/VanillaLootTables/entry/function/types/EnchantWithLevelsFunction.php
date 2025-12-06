@@ -33,9 +33,7 @@ class EnchantWithLevelsFunction extends EntryFunction{
 		/** @var EnchantingOption $enchantingOption */
 		$enchantingOption = $createOptionMethod->invoke(null, $context->getRandom(), $item, $requiredXpLevel);
 
-		foreach($enchantingOption->getEnchantments() as $enchantment){
-			$item->addEnchantment($enchantment);
-		}
+		$item = EnchantingHelper::enchantItem($item, $enchantingOption->getEnchantments());
 		return parent::onCreation($context, $item);
 	}
 
