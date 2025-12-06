@@ -48,7 +48,10 @@ final class ItemStackData{
 			}catch(ItemTypeDeserializeException $e){
 				//TODO: this is not the best way...
 				$item = StringToItemParser::getInstance()->parse($this->name);
-				$item?->setCount($count);
+				if($item === null){
+					return $items;
+				}
+				$item->setCount($count);
 			}
 
 			foreach($functions as $function){
