@@ -8,6 +8,7 @@ use kostamax27\VanillaLootTables\entry\function\EntryFunction;
 use kostamax27\VanillaLootTables\LootContext;
 use pocketmine\data\bedrock\item\ItemTypeDeserializeException;
 use pocketmine\item\Item;
+use pocketmine\item\StringToItemParser;
 use pocketmine\utils\Utils;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
 use function ceil;
@@ -44,25 +45,25 @@ final class ItemStackData{
 					$count,
 					null
 				));
-
-				foreach($functions as $function){
-					$item = $function->onCreation($context, $item);
-				}
-
-				//split up stacks
-				$maxStackSize = $item->getMaxStackSize();
-				$stacks = (int) ceil($count / $maxStackSize);
-				if($stacks > 1){
-					for($i = 0; $i < $stacks; $i++){
-						$items[] = $item->pop(min($maxStackSize, $item->getCount()));
-					}
-				}else{
-					$items[] = $item;
-				}
-
-				return $items;
 			}catch(ItemTypeDeserializeException $e){
-				//probably unknown item
+				//TODO: this is not the best way...
+				$item = StringToItemParser::getInstance()->parse($this->name);
+				$item?->setCount($count);
+			}
+
+			foreach($functions as $function){
+				$item = $function->onCreation($context, $item);
+			}
+
+			//split up stacks
+			$maxStackSize = $item->getMaxStackSize();
+			$stacks = (int) ceil($count / $maxStackSize);
+			if($stacks > 1){
+				for($i = 0; $i < $stacks; $i++){
+					$items[] = $item->pop(min($maxStackSize, $item->getCount()));
+				}
+			}else{
+				$items[] = $item;
 			}
 		}
 
